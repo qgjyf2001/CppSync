@@ -5,7 +5,9 @@
 ## 运行环境
 
 sudo apt-get install g++-11
+
 curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
+
 sudo apt-get install bazel
 
 ## 编译方式
