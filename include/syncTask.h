@@ -66,8 +66,8 @@ struct  awaiter
             handler.resume();
         }
     }
-    void await_resume() {
-        
+    T await_resume() {
+        return m_promise->get_future().get();   
     }
 private:
     promise<T> *m_promise;

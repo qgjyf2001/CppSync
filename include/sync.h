@@ -7,8 +7,13 @@ namespace cppSync {
         using type = decltype(f(std::forward<Args>(args)...));
         std::unique_ptr<promise<type>> promise_ = std::make_unique<promise<type>>();
         std::thread thread([&]() {
-            auto ret = f(std::forward<Args>(args)...);
-            promise_->set_value(ret);
+            if constexpr(std::is_same<void,type>::value) {
+                f(std::forward<Args>(args)...);
+                promise_->set_value();
+            } else {
+                auto ret = f(std::forward<Args>(args)...);
+                promise_->set_value(ret);
+            }
         });
         thread.detach();
         return promise_;
