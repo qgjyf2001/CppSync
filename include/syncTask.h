@@ -11,6 +11,7 @@
 
 namespace cppSync {
 
+
 class task {
     public:
         struct  promise_type 
@@ -25,14 +26,19 @@ class task {
                 return {};
             }
             void return_void() {
+                promise_->set_value();
                 return;
             }
             void unhandled_exception() {
                 return;
             }
+            std::shared_ptr<promise<void>> promise_ = std::make_shared<promise<void>>();
         };
         task(const std::coroutine_handle<promise_type> handler):handler_(handler) {
 
+        }
+        auto get_promise() {
+            return handler_.promise().promise_;
         }
     private:
         std::coroutine_handle<promise_type> handler_;

@@ -1,2 +1,4 @@
 /.vscode
 /bazel-*
+peda-session-test.txt
+.gdb_history

@@ -25,15 +25,34 @@ public:
     std::future<T> get_future() {
         return m_promise.get_future();
     }
-    
-    bool set_callback(std::function<void()> _callback) {
+
+    template <typename F,typename... Args>
+    bool set_callback(F _callback,Args... args) {
         std::lock_guard<std::mutex> lck(mutex);
         if (finished) {
             return false;
         } else {
-            callback=_callback;
+            callback=std::bind(_callback,args...);
         }
         return true;
+    }
+    template <typename F,typename... Args>
+    auto then(F f,Args... args) {
+        using type = decltype(f(std::forward<Args>(args)...));
+        auto promise_ = std::make_shared<promise<type>>();
+        auto callback=[&](std::shared_ptr<promise<type>> promise__){
+            if constexpr(std::is_same<void,type>::value) {
+                f(std::forward<Args>(args)...);
+                promise__->set_value();
+            } else {
+                auto ret = f(std::forward<Args>(args)...);
+                promise__->set_value(ret);
+            }
+        };
+        if (!set_callback(callback,promise_)) {
+            callback(promise_);
+        }
+        return promise_;
     }
 private:
     std::function<void()> callback;
@@ -61,14 +80,34 @@ public:
         return m_promise.get_future();
     }
     
-    bool set_callback(std::function<void()> _callback) {
+    template <typename F,typename... Args>
+    bool set_callback(F _callback,Args... args) {
         std::lock_guard<std::mutex> lck(mutex);
         if (finished) {
             return false;
         } else {
-            callback=_callback;
+            callback=std::bind(_callback,args...);
         }
         return true;
+    }
+
+    template <typename F,typename... Args>
+    auto then(F f,Args... args) {
+        using type = decltype(f(std::forward<Args>(args)...));
+        auto promise_ = std::make_shared<promise<type>>();
+        auto callback=[&](std::shared_ptr<promise<type>> promise__){
+            if constexpr(std::is_same<void,type>::value) {
+                f(std::forward<Args>(args)...);
+                promise__->set_value();
+            } else {
+                auto ret = f(std::forward<Args>(args)...);
+                promise__->set_value(ret);
+            }
+        };
+        if (!set_callback(callback,promise_)) {
+            callback(promise_);
+        }
+        return promise_;
     }
 private:
     std::function<void()> callback;

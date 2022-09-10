@@ -13,9 +13,13 @@ std::thread* threadPool::threadLoop(int num)
         //signal(SIGPIPE , SIG_IGN);
         while (!terminate)
         {
-            std::unique_lock<std::mutex> lck(mutex);
-            if (queue.empty()) {
-                consumer.wait(lck);
+            {
+                std::unique_lock<std::mutex> lck(mutex);
+                if (queue.empty()) {
+                    consumer.wait(lck,[&](){
+                        return !queue.empty();
+                    });
+                }
             }
             workingThread++;
             bool result;
