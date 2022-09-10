@@ -15,3 +15,10 @@ cc_binary(
     copts = ["-std=c++20","-fcoroutines"],
     deps = [":libThreadPool"],
 )
+cc_binary(
+    name = "graphTest",
+    srcs = glob(["include/*.h"])+["graphTest.cpp"],
+    linkopts = ["-lpthread"],
+    copts = ["-std=c++20","-fcoroutines"],
+    deps = [":libThreadPool"],
+)

@@ -17,7 +17,7 @@ class task {
         struct  promise_type 
         {
             task get_return_object() {
-                return task(std::coroutine_handle<promise_type>::from_promise(*this));
+                return task(std::coroutine_handle<promise_type>::from_promise(*this),promise_);
             }
             std::suspend_never initial_suspend() noexcept {
                 return {};
@@ -34,14 +34,15 @@ class task {
             }
             std::shared_ptr<promise<void>> promise_ = std::make_shared<promise<void>>();
         };
-        task(const std::coroutine_handle<promise_type> handler):handler_(handler) {
+        task(const std::coroutine_handle<promise_type> handler,std::shared_ptr<promise<void>> promise_):handler_(handler),promise_(promise_) {
 
         }
         auto get_promise() {
-            return handler_.promise().promise_;
+            return promise_;
         }
     private:
         std::coroutine_handle<promise_type> handler_;
+        std::shared_ptr<promise<void>> promise_;
         
 };
 
@@ -55,7 +56,6 @@ struct  awaiter
 {
     std::mutex mutex;
     awaiter(promise<T> *promise_) : m_promise(promise_) {
-
     }
     bool await_ready() {
         return false;

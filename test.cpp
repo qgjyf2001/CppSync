@@ -8,6 +8,7 @@
 
 #include "./include/syncTask.h"
 #include "./include/sync.h"
+#include "./include/graph.h"
 
 // #include <boost/thread/future.hpp>
 cppSync::task test1() {
@@ -59,5 +60,4 @@ int main() {
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
-    
 }
