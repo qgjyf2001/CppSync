@@ -18,7 +18,7 @@ cppSync::task test1() {
             return 1234;
         });
         std::cout<<"await:"<<__LINE__<<" thread_id:"<<std::this_thread::get_id()<<std::endl;
-        int res = co_await cppSync::awaiter(t.get());
+        int res = co_await cppSync::awaiter(t);
         std::cout<<"done:"<<__LINE__<<" res:"<<res<<" thread_id:"<<std::this_thread::get_id()<<std::endl;
     }
     co_return;
@@ -30,7 +30,7 @@ cppSync::task test2() {
             std::this_thread::sleep_for(std::chrono::seconds(2));
         });
         std::cout<<"await:"<<__LINE__<<" thread_id:"<<std::this_thread::get_id()<<std::endl;
-        co_await cppSync::awaiter(t.get());
+        co_await cppSync::awaiter(t);
         std::cout<<"done:"<<__LINE__<<" thread_id:"<<std::this_thread::get_id()<<std::endl;
     }
     co_return;

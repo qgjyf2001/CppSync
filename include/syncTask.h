@@ -35,7 +35,6 @@ class task {
             std::shared_ptr<promise<void>> promise_ = std::make_shared<promise<void>>();
         };
         task(const std::coroutine_handle<promise_type> handler,std::shared_ptr<promise<void>> promise_):handler_(handler),promise_(promise_) {
-
         }
         auto get_promise() {
             return promise_;
@@ -55,14 +54,14 @@ template <typename T>
 struct  awaiter
 {
     std::mutex mutex;
-    awaiter(promise<T> *promise_) : m_promise(promise_) {
+    awaiter(std::shared_ptr<promise<T>> promise_) : m_promise(promise_) {
     }
     bool await_ready() {
         return false;
 
     }
     void await_suspend(std::coroutine_handle<task::promise_type> handler) {
-        bool res = m_promise->set_callback([handler](){
+        bool res = m_promise->add_callback([handler](){
             std::lock_guard<std::mutex> lck(getSingletonMutex());
             threadPool::instance<THREADPOOL_SIZE>().addThread([handler](){
                 handler.resume();
@@ -73,11 +72,11 @@ struct  awaiter
         }
     }
     T await_resume() {
-        return m_promise->get_future().get();   
+        auto val=m_promise->get_future(); 
+        return val.get();
     }
 private:
-    promise<T> *m_promise;
-    
+    std::shared_ptr<promise<T>> m_promise;
 };
 
 }

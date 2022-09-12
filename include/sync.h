@@ -1,12 +1,13 @@
 #ifndef SYNC_H
 #define SYNC_H
+#include "threadPool.h"
 #include "syncFuture.h"
 namespace cppSync {
     template <typename T,typename... Args>
     auto async(T f,Args... args) {
         using type = decltype(f(std::forward<Args>(args)...));
-        std::unique_ptr<promise<type>> promise_ = std::make_unique<promise<type>>();
-        std::thread thread([&]() {
+        std::shared_ptr<promise<type>> promise_ = std::make_shared<promise<type>>();
+        threadPool::instance<THREADPOOL_SIZE>().addThread([&]() {
             if constexpr(std::is_same<void,type>::value) {
                 f(std::forward<Args>(args)...);
                 promise_->set_value();
@@ -15,7 +16,6 @@ namespace cppSync {
                 promise_->set_value(ret);
             }
         });
-        thread.detach();
         return promise_;
     }
 }
