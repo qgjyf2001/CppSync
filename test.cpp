@@ -55,9 +55,6 @@ int main() {
     auto task2=test2().get_promise()->then([](){
         std::cout<<"task2 joined"<<std::endl;
     });
-    std::cout<<"task done"<<std::endl;
-    while (true)
-    {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
+    task1->get_future().get();
+    task2->get_future().get();
 }

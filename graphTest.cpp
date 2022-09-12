@@ -42,9 +42,5 @@ int main() {
     node6->depend(node4);
     (*node6)().get_promise()->then([](){
         std::cout<<"graph execution done"<<std::endl;
-    });
-    while (true)
-    {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
+    })->get_future().get();
 }

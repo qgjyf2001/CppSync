@@ -17,7 +17,7 @@ std::thread* threadPool::threadLoop(int num)
                 std::unique_lock<std::mutex> lck(mutex);
                 if (queue.empty()) {
                     consumer.wait(lck,[&](){
-                        return !queue.empty();
+                        return !queue.empty()||terminate;
                     });
                 }
             }
