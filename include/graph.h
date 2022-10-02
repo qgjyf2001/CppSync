@@ -9,8 +9,8 @@
 namespace cppSync {
 
 class graph {
+public:
     class Node;
-    std::map<Node*,std::shared_ptr<promise<void>>> mp;
     class Node : public std::enable_shared_from_this<Node> {
         private:
             std::vector<std::shared_ptr<Node>> depends;
@@ -44,6 +44,8 @@ class graph {
             co_return;
         }
     };
+private:
+    std::map<Node*,std::shared_ptr<promise<void>>> mp;
 public:
     template <typename F,typename... Args>
     std::shared_ptr<Node> add_node(F f,Args... args) {

@@ -21,3 +21,11 @@ cc_binary(
     copts = ["-std=c++20","-fcoroutines"],
     deps = [":libCppSync"]
 )
+
+cc_binary(
+    name = "benchmark",
+    srcs = ["benchmark.cpp"],
+    linkopts = ["-lpthread"],
+    copts = ["-std=c++20","-fcoroutines"],
+    deps = [":libCppSync"]
+)
